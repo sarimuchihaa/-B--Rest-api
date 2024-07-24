@@ -1,0 +1,32 @@
+(1)
+(Server)
+(server.js)
+const express = require('express');
+const app = express();
+const port = 4000;
+
+app.listen(port, () => {
+  console.log(`Port ${port}🚀`)
+})
+Terminal:
+Port 4000🚀
+
+
+
+(2)
+const express = require('express');
+const app = express();
+const port = 4000;
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/subscribers', { useUnifiedTopology: true });
+const db = mongoose.connection
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log('Connected to Database🌟'));
+
+app.listen(port, () => {
+  console.log(`Port ${port}🚀`)
+})
+Terminal:
+Port 4000🚀
+Connected to database🌟

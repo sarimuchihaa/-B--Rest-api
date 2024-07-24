@@ -1,0 +1,392 @@
+(1)
+(Testing API)
+(Get all)
+(subscribers.js)
+// Getting all
+router.get('/', async (req, res) => {
+    try {
+      const subscribers = await Subscriber.find()
+      res.json(subscribers)
+    } catch (err) {
+      res.status(500).json({message: err.message})
+    }
+})
+
+
+
+(route.rest)
+GET http://localhost:4000/subscribers
+
+###
+
+GET http://localhost:4000/subscribers/7
+
+
+
+(Response)
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 2
+ETag: W/"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w"
+Date: Tue, 23 Jul 2024 12:14:36 GMT
+Connection: close
+Output:
+[]
+
+
+
+
+(2)
+(Create one)
+(subscribers.js)
+// Creating one
+router.post('/', async (req, res) => {
+    const subscriber = new Subscriber({
+        name: req.body.name,
+        subscribedToChannel: req.body.subscribedToChannel
+    })
+    try {
+      const newSubscriber = await subscriber.save()
+      res.status(201).json(newSubscriber)
+    } catch (err) {
+      res.status(400).json({message: err.message})
+    }
+})
+
+
+
+(route.rest)
+###
+
+POST http://localhost:4000/subscribers
+Content-Type: application/json
+
+{
+    "name": "Responsive web design🎨",
+    "subscribedToChannel": "Free code camp"
+}
+
+
+
+(Response)
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 138
+ETag: W/"8a-S5K63PsX6nSb1aBiSrXELBEywk8"
+Date: Tue, 23 Jul 2024 12:59:03 GMT
+Connection: close
+
+{
+  "name": "Responsive web design🎨",
+  "subscribedToChannel": "Free code camp",
+  "_id": "669fa9170b84727fe29bd21c",
+  "subscribeDate": "2024-07-23T12:59:03.621Z",
+  "__v": 0
+}
+
+
+
+
+(3)
+(Middleware)
+(subscribers.js)
+async function getSubscriber(req, res, next) {
+    let subscriber
+    try {
+      subscriber = await Subscriber.findById(req.params.id)
+      if (subscriber == null) {
+        return res.status(404).json({message: 'Cannot find subscriber'})
+      }
+    } catch (error) {
+      return res.status(500).json({message: err.message})
+    }
+
+    res.subscriber = subscriber
+    next()
+}
+
+
+
+
+(4)
+(Get one)
+(subscribers.js)
+// Getting one
+router.get('/:id', getSubscriber, (req, res) => {
+    res.send(res.subscriber.name);
+})
+
+
+
+(route.rest)
+###
+
+GET http://localhost:4000/subscribers/669fac46db0ea07a4a11eb3c
+
+
+
+(Response)
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: text/html; charset=utf-8
+Content-Length: 25
+ETag: W/"19-diLgSOLtFECmvlFL38laxqFDHTc"
+Date: Tue, 23 Jul 2024 14:59:12 GMT
+Connection: close
+Output:
+Responsive web design🎨
+
+
+
+
+(5)
+(Delete one)
+(subscribers.js)
+// Deleting one
+router.delete('/:id', getSubscriber, async (req, res) => {
+    try {
+      await Subscriber.findByIdAndDelete(req.params.id);
+      res.json({message: 'Deleted subscriber🎸'})
+    } catch (err) {
+      res.status(500).json({message: err.message})
+    }
+})
+
+
+
+(route.rest)
+###
+
+DELETE http://localhost:4000/subscribers/669fe6621f13aed533a3615c
+
+
+
+(Response)
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 36
+ETag: W/"24-unfCuDu8Qz+37fts7QksNwrlEMU"
+Date: Tue, 23 Jul 2024 17:37:43 GMT
+Connection: close
+Output:
+{
+  "message": "Deleted subscriber🎸"
+}
+
+
+
+
+(6)
+(Update one)
+(subscribers.js)
+// Updating one
+router.patch('/:id', getSubscriber, async (req, res) => {
+    if (req.body.name != null) {
+      res.subscriber.name = req.body.name
+    }
+    if (req.body.subscribedToChannel != null) {
+      res.subscriber.subscribedToChannel = req.body.subscribedToChannel
+    }
+    try {
+      const updatedSubscriber = await res.subscriber.save()
+      res.json(updatedSubscriber)
+    } catch (err) {
+      res.status(400).json({ message: err.message })
+    }
+})
+
+
+
+(route.rest)
+###
+PATCH http://localhost:4000/subscribers/669ff3377b554254ce33fb4c
+Content-Type: application/json
+
+{
+    "name": "Artist"
+}
+
+
+
+(Response)
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 140
+ETag: W/"8c-U5WoosyTTWYzqxYTPQa6vWzpXXA"
+Date: Tue, 23 Jul 2024 18:17:35 GMT
+Connection: close
+
+{
+  "_id": "669ff3377b554254ce33fb4c",
+  "name": "Artist",
+  "subscribedToChannel": "Free code camp",
+  "subscribeDate": "2024-07-23T18:15:19.424Z",
+  "__v": 0
+}
+
+
+
+
+(7)
+(Data)
+(subscriber.js)
+const express = require('express');
+const router = express.Router();
+const Subscriber = require('../models/subscriber');
+
+// Creating one
+router.post('/', async (req, res) => {
+  const subscriber = new Subscriber({
+    name: req.body.name,
+    subscribedToChannel: req.body.subscribedToChannel
+  })
+  try {
+    const newSubscriber = await subscriber.save()
+    res.status(201).json(newSubscriber)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+// Getting all
+router.get('/', async (req, res) => {
+    try {
+      const subscribers = await Subscriber.find()
+      res.json(subscribers)
+    } catch (err) {
+      res.status(500).json({message: err.message})
+    }
+})
+
+// Getting one
+router.get('/:id', getSubscriber, (req, res) => {
+    res.send(res.subscriber.name);
+})
+
+// Updating one
+router.patch('/:id', getSubscriber, async (req, res) => {
+    if (req.body.name != null) {
+      res.subscriber.name = req.body.name
+    }
+    if (req.body.subscribedToChannel != null) {
+      res.subscriber.subscribedToChannel = req.body.subscribedToChannel
+    }
+    try {
+      const updatedSubscriber = await res.subscriber.save()
+      res.json(updatedSubscriber)
+    } catch (err) {
+      res.status(400).json({ message: err.message })
+    }
+})
+
+// Deleting one
+router.delete('/:id', getSubscriber, async (req, res) => {
+    try {
+      await Subscriber.findByIdAndDelete(req.params.id);
+      res.json({message: 'Deleted subscriber🎸'})
+    } catch (err) {
+      res.status(500).json({message: err.message})
+    }
+})
+
+async function getSubscriber(req, res, next) {
+    let subscriber
+    try {
+      subscriber = await Subscriber.findById(req.params.id)
+      if (subscriber == null) {
+        return res.status(404).json({message: 'Cannot find subscriber🎻'})
+      }
+    } catch (err) {
+      return res.status(500).json({message: err.message})
+    }
+
+    res.subscriber = subscriber
+    next()
+}
+
+module.exports = router
+
+
+
+(route.rest)
+###
+
+POST http://localhost:4000/subscribers
+Content-Type: application/json
+
+{
+    "name": "Responsive web design🎨",
+    "subscribedToChannel": "Free code camp"
+}
+
+
+
+###
+GET http://localhost:4000/subscribers
+###
+GET http://localhost:4000/subscribers/669fe8e38bec850f9510c91c
+
+
+
+###
+PATCH http://localhost:4000/subscribers/669ff3377b554254ce33fb4c
+Content-Type: application/json
+
+{
+    "name": "Artist"
+}
+
+
+
+###
+DELETE http://localhost:4000/subscribers/669ff3377b554254ce33fb4c
+
+
+
+(server.js)
+const express = require('express');
+const app = express();
+const port = 4000;
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+mongoose.connect(process.env.DATABASE_URL, { useUnifiedTopology: true });
+const db = mongoose.connection
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log('Connected to database🌟'));
+
+app.use(express.json());
+
+const subscribersRouter = require('./routes/subscribers');
+app.use('/subscribers', subscribersRouter);
+
+app.listen(port, () => {
+  console.log(`Port ${port}🚀`)
+})
+
+
+
+(subscriber.js)
+const mongoose = require('mongoose')
+
+const subscriberSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  subscribedToChannel: {
+    type: String,
+    required: true
+  },
+  subscribeDate: {
+    type: Date,
+    required: true,
+    default: Date.now
+  }
+})
+
+module.exports = mongoose.model('Subscriber', subscriberSchema)

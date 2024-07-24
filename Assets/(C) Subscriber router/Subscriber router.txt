@@ -1,0 +1,130 @@
+(1)
+(Subscriber router)
+(server.js)
+const express = require('express');
+const app = express();
+const port = 4000;
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+mongoose.connect(process.env.DATABASE_URL, { useUnifiedTopology: true });
+const db = mongoose.connection
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log('Connected to database🌟'));
+
+app.use(express.json());
+
+const subscribersRouter = require('./routes/subscribers');
+app.use('/subscribers', subscribersRouter);
+
+app.listen(port, () => {
+  console.log(`Port ${port}🚀`)
+})
+
+
+
+(subscribers.js)
+const express = require('express');
+const router = express.Router();
+
+// Getting all
+router.get('/', (req, res) => {
+    res.send("Nero is hero🔮");
+})
+
+// Getting one
+router.get('/:id', (req, res) => {
+
+})
+
+// Creating one
+router.post('/', (req, res) => {
+
+})
+
+// Updating one
+router.patch('/:id', (req, res) => {
+
+})
+
+// Deleting one
+router.delete('/:id', (req, res) => {
+
+})
+
+module.exports = router
+
+
+
+(route.rest)
+GET http://localhost:4000/subscribers
+
+
+
+(Response)
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: text/html; charset=utf-8
+Content-Length: 16
+ETag: W/"10-rFbfXsUgeJyH+B9l3Eta+yEByTg"
+Date: Mon, 22 Jul 2024 20:28:24 GMT
+Connection: close
+Output:
+Nero is hero🔮
+
+
+
+
+(2)
+(subscribers.js)
+const express = require('express');
+const router = express.Router();
+
+// Getting all
+router.get('/', (req, res) => {
+    res.send("Nero is hero🔮");
+})
+
+// Getting one
+router.get('/:id', (req, res) => {
+    res.send(req.params.id);
+})
+
+// Creating one
+router.post('/', (req, res) => {
+
+})
+
+// Updating one
+router.patch('/:id', (req, res) => {
+
+})
+
+// Deleting one
+router.delete('/:id', (req, res) => {
+
+})
+
+module.exports = router
+
+
+
+(route.rest)
+GET http://localhost:4000/subscribers
+
+###
+
+GET http://localhost:4000/subscribers/7
+
+
+
+(Response)
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: text/html; charset=utf-8
+Content-Length: 1
+ETag: W/"1-kCujzaGIOAFZS24bRSeQzFOUj9o"
+Date: Mon, 22 Jul 2024 20:40:30 GMT
+Connection: close
+Output:
+7
